@@ -1,0 +1,112 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "spell book",
+      "intents": [
+        {
+          "name": "AMAZON.RepeatIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "Spell",
+          "slots": [
+            {
+              "name": "spell_name",
+              "type": "spells"
+            }
+          ],
+          "samples": [
+            "describe {spell_name}",
+            "how do i cast {spell_name}",
+            "what is {spell_name} ",
+            "what does {spell_name} do",
+            "tell me about {spell_name}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "values": [
+            {
+              "name": {
+                "value": "power word stun"
+              }
+            },
+            {
+              "name": {
+                "value": "fly"
+              }
+            },
+            {
+              "name": {
+                "value": "dispel magic"
+              }
+            },
+            {
+              "name": {
+                "value": "counterspell"
+              }
+            },
+            {
+              "name": {
+                "value": "firebolt"
+              }
+            },
+            {
+              "name": {
+                "value": "finger of death"
+              }
+            },
+            {
+              "name": {
+                "value": "sanctuary"
+              }
+            },
+            {
+              "name": {
+                "value": "revivify"
+              }
+            },
+            {
+              "name": {
+                "value": "toll of the dead"
+              }
+            },
+            {
+              "name": {
+                "value": "cloudkill"
+              }
+            },
+            {
+              "name": {
+                "value": "fireball"
+              }
+            }
+          ],
+          "name": "spells"
+        }
+      ]
+    }
+  },
+  "version": "2"
+}
