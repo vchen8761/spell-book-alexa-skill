@@ -3,6 +3,10 @@
 // session persistence, api calls, and more.
 const Alexa = require('ask-sdk-core');
 
+// Web Scraping npm modules: 
+const axios = require('axios');
+const cheerio = require('cheerio');
+
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
@@ -21,15 +25,39 @@ const Spell_Handler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'Spell';
     },
     handle(handlerInput) {
-        // const speakOutput = 'Hello, Victor the Wizard!';
         // Build spell description for speakOutput
-        String 
+        var speakOutput = "Broken";
         
+        var spell_name = handlerInput.requestEnvelope.request.intent.slots.spell_name.value;
+        spell_name = spell_name.split(' ').join('-');
         
-        const speakOutput = '';
+        // Source for spell blocks
+        var url = 'http://dnd5e.wikidot.com/spell:';
+        url = url.concat(spell_name);
+        
+        var output = [];
+        
+        axios.get(url).then((response) => {
+            if(response.status === 200) {
+                const html = response.data;
+                const $ = cheerio.load(html);
+                // var data = [];
+                $('p').each(function(i, element) {
+                    output.push($(element).text());
+                });
+                speakOutput = output[2];
+                console.log(output[2]);
+                console.log(speakOutput);
+            }
+        });
+        
+        console.log("Afterwards: ");
+        console.log(output);
+        console.log(speakOutput);
+        
         return handlerInput.responseBuilder
             .speak(speakOutput)
-            //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+            .reprompt(speakOutput)
             .getResponse();
     }
 };

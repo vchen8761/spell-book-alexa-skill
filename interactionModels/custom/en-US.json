@@ -89,7 +89,7 @@
             },
             {
               "name": {
-                "value": "toll of the dead"
+                "value": "toll the dead"
               }
             },
             {
@@ -108,5 +108,5 @@
       ]
     }
   },
-  "version": "2"
+  "version": "4"
 }
