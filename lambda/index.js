@@ -19,46 +19,51 @@ const LaunchRequestHandler = {
             .getResponse();
     }
 };
+const getSpellInfo = async (handlerInput) => {
+    var spell_name = handlerInput.requestEnvelope.request.intent.slots.spell_name.value;
+    spell_name = spell_name.split(' ').join('-');
+    
+    // Source for spell blocks
+    var url = 'http://dnd5e.wikidot.com/spell:';
+    url = url.concat(spell_name);
+    
+    var output = [];
+    
+    await axios.get(url).then((response) => {
+        if(response.status === 200) {
+            const html = response.data;
+            const $ = cheerio.load(html);
+            // var data = [];
+            $('p').each(function(i, element) {
+                output.push($(element).text());
+            });
+            console.log("In getSpellInfo/axios and cheerio: "+ output[2])
+        }
+    });
+    
+    console.log("In getSpellInfo: "+ output[2])
+    return output[2];
+}
 const Spell_Handler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'Spell';
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
         // Build spell description for speakOutput
-        var speakOutput = "Broken";
-        
-        var spell_name = handlerInput.requestEnvelope.request.intent.slots.spell_name.value;
-        spell_name = spell_name.split(' ').join('-');
-        
-        // Source for spell blocks
-        var url = 'http://dnd5e.wikidot.com/spell:';
-        url = url.concat(spell_name);
-        
-        var output = [];
-        
-        axios.get(url).then((response) => {
-            if(response.status === 200) {
-                const html = response.data;
-                const $ = cheerio.load(html);
-                // var data = [];
-                $('p').each(function(i, element) {
-                    output.push($(element).text());
-                });
-                speakOutput = output[2];
-                console.log(output[2]);
-                console.log(speakOutput);
-            }
-        });
-        
-        console.log("Afterwards: ");
-        console.log(output);
-        console.log(speakOutput);
-        
+        // getSpellInfo(handlerInput).then((speakOutput) => {
+        //     console.log("In Spell_Handler: " + speakOutput);
+        //     return handlerInput.responseBuilder
+        //         .speak(speakOutput)
+        //         .reprompt(speakOutput)
+        //         .getResponse();  
+        // });
+        const speakOutput = await getSpellInfo(handlerInput);
+        console.log("In Spell_Handler: " + speakOutput);
         return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            .getResponse();
+                .speak(speakOutput)
+                .reprompt(speakOutput)
+                .getResponse();  
     }
 };
 const HelpIntentHandler = {
