@@ -12,54 +12,71 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speakOutput = 'Welcome to your spell book! What would you like to know about?';
+        const speakOutput = 'Welcome to your spell book! What spell would you like to learn about?';
         return handlerInput.responseBuilder
             .speak(speakOutput)
             .reprompt(speakOutput)
             .getResponse();
     }
 };
+
+// Helper Function for handling web scraping
 const getSpellInfo = async (handlerInput) => {
+    
+    // Get spell_name value from intent slots
     var spell_name = handlerInput.requestEnvelope.request.intent.slots.spell_name.value;
+    // Split spell name by '-' for wikidot url format
     spell_name = spell_name.split(' ').join('-');
     
     // Source for spell blocks
     var url = 'http://dnd5e.wikidot.com/spell:';
+    // Concatenate hypenated spell name to url for query
     url = url.concat(spell_name);
     
-    var output = [];
+    // Spell information from web scraping wikidot
+    var spell_description = [];
     
+    // Use await to run code synchronously 
+    // Use Axios to get HTML DOM 
     await axios.get(url).then((response) => {
+        // If url status code is OK / Website reached OK
         if(response.status === 200) {
+            // Grab data and load it into cheerio parser
             const html = response.data;
             const $ = cheerio.load(html);
-            // var data = [];
+            
+            // Search each description tag for its text
+            // This works since wikidot uses static pages
             $('p').each(function(i, element) {
-                output.push($(element).text());
+                spell_description.push($(element).text());
             });
-            console.log("In getSpellInfo/axios and cheerio: "+ output[2])
         }
     });
     
-    console.log("In getSpellInfo: "+ output[2])
-    return output[2];
+    console.log(spell_description);
+    var outputText = spell_name + " is a " + spell_description[0] + ". ";
+    
+    for(var i = 2;  i < spell_description.length - 1; i++){
+        outputText += spell_description[i] + " ";
+    }
+    
+    outputText += "The spell has a " + spell_description[1] + ". ";
+    outputText += "The spell is found in the following " + spell_description[spell_description.length - 1] + ".";
+    
+    // Outputs appropriate spell description
+    return outputText;
 }
 const Spell_Handler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'Spell';
     },
+    // Make async so that we can use await keywork and 
+    // wait for external API call
+    // in this case: Axios and Cheerio
     async handle(handlerInput) {
-        // Build spell description for speakOutput
-        // getSpellInfo(handlerInput).then((speakOutput) => {
-        //     console.log("In Spell_Handler: " + speakOutput);
-        //     return handlerInput.responseBuilder
-        //         .speak(speakOutput)
-        //         .reprompt(speakOutput)
-        //         .getResponse();  
-        // });
+        // Return description of spell for Alexa to repeat aloud
         const speakOutput = await getSpellInfo(handlerInput);
-        console.log("In Spell_Handler: " + speakOutput);
         return handlerInput.responseBuilder
                 .speak(speakOutput)
                 .reprompt(speakOutput)
@@ -72,7 +89,7 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'You can say hello to me! How can I help?';
+        const speakOutput = 'You can ask me to describe fantasy spells. Try saying: Describe Fireball';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
