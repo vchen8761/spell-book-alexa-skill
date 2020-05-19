@@ -13,7 +13,7 @@ n/a (Not integrated with Travis CI yet)
 
 ## Tech/framework used
 - Javascript
-- Node.js
+- Node.js (ASK SDK)
 - Axios
 - Cheerio
 
@@ -63,9 +63,11 @@ publish it.
 
 ## API Reference
 https://cheerio.js.org/
+
 https://www.npmjs.com/package/axios
 
 ## Credits
 Thanks to @Dan O for linking me to a Stack Overflow thread on Promise Callbacks
+
 Thanks to @Dylan Sather for his Medium article on web scraping (https://medium.com/@dylan.sather/scrape-a-site-with-node-and-cheerio-in-5-minutes-4617daee3384)
 
